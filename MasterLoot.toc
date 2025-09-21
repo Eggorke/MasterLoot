@@ -1,0 +1,19 @@
+## Interface: 11200
+## Title: MasterLoot
+## Author: Xckbucl, Big Thanks to Zernin from MLM
+## Version: 3.6
+## Notes: Eases the stresses of passing out loot.
+## DefaultState: Enabled
+## LoadOnDemand: 0
+## SavedVariablesPerCharacter: MasterLootManagerSettings
+languages\LocalizationsStrings.lua
+bossquest.lua
+lootprio.lua
+lootitems.lua
+specTable.lua
+AutoMasterLooter.xml
+Util.lua
+XckMLAdvancedMainFrame.xml
+XckMLAdvancedSettingsFrame.xml
+languages\LocalizationRaidItemsLib.lua
+XckMLAdvancedML.lua

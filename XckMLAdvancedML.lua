@@ -776,36 +776,90 @@ end
 -- end
 
 -- AutoLoot Corpse
-function XckMLAdvancedLUA:AutoLootTrash()
-	self:Print(match)
-	local NbPlayers = self:GetNbPlayersRaidParty()
-	for li = 1, GetNumLootItems() do 
-		local texture, name, quantity, quality, locked = GetLootSlotInfo(li)
-		if XckMLAdvancedMainSettingsAutoLootRaidsItem:GetChecked() and XckMLAdvancedLUA:CheckIsRaidItem(name) then
-			for ci = 1, NbPlayers do 
-				if (GetMasterLootCandidate(ci) == XckMLAdvancedLUA.aq_zg_items_guy) then 
-					GiveMasterLoot(li, ci); 
-				end
-			end
+-- function XckMLAdvancedLUA:AutoLootTrash()
+-- 	self:Print(match)
+-- 	local NbPlayers = self:GetNbPlayersRaidParty()
+-- 	for li = 1, GetNumLootItems() do 
+-- 		local texture, name, quantity, quality, locked = GetLootSlotInfo(li)
+-- 		if XckMLAdvancedMainSettingsAutoLootRaidsItem:GetChecked() and XckMLAdvancedLUA:CheckIsRaidItem(name) then
+-- 			for ci = 1, NbPlayers do 
+-- 				if (GetMasterLootCandidate(ci) == XckMLAdvancedLUA.aq_zg_items_guy) then 
+-- 					GiveMasterLoot(li, ci); 
+-- 				end
+-- 			end
 			
-			elseif XckMLAdvancedMainSettingsAutoLootTrash:GetChecked() and quality <= 1 and not XckMLAdvancedLUA.srData[name] and not loot_prio[name] and not LootedItemsTable[name] then
+-- 			elseif XckMLAdvancedMainSettingsAutoLootTrash:GetChecked() and quality <= 1 and not XckMLAdvancedLUA.srData[name] and not loot_prio[name] and not LootedItemsTable[name] then
 			
-			-- elseif XckMLAdvancedMainSettingsAutoLootTrash:GetChecked() and LootSlotIsSoulbound(li) then
-			-- local match = 0	
-			-- 	for key,value in LootedItemsTable do
-			-- 		if (key == name) then
-			-- 			match = 1
-			-- 		end
-			-- 	end
+-- 			-- elseif XckMLAdvancedMainSettingsAutoLootTrash:GetChecked() and LootSlotIsSoulbound(li) then
+-- 			-- local match = 0	
+-- 			-- 	for key,value in LootedItemsTable do
+-- 			-- 		if (key == name) then
+-- 			-- 			match = 1
+-- 			-- 		end
+-- 			-- 	end
 
-			-- 	if (match ~= 1) then
-			for ci = 1, NbPlayers do 
-				if (GetMasterLootCandidate(ci) == XckMLAdvancedLUA.poorguy) then 
-					GiveMasterLoot(li, ci); 
-				end
-			end		
-		end
-	end
+-- 			-- 	if (match ~= 1) then
+-- 			for ci = 1, NbPlayers do 
+-- 				if (GetMasterLootCandidate(ci) == XckMLAdvancedLUA.poorguy) then 
+-- 					GiveMasterLoot(li, ci); 
+-- 				end
+-- 			end		
+-- 		end
+-- 	end
+-- end
+
+-- AutoLoot Corpse
+function XckMLAdvancedLUA:AutoLootTrash()
+    local NbPlayers = self:GetNbPlayersRaidParty()
+
+    for li = 1, GetNumLootItems() do 
+        local texture, name, quantity, quality, locked = GetLootSlotInfo(li)
+
+        -- защита от nil
+        if name and quality then
+
+            -- ==== 1. рейдовые предметы ====
+            if XckMLAdvancedMainSettingsAutoLootRaidsItem:GetChecked() 
+               and XckMLAdvancedLUA:CheckIsRaidItem(name) then
+
+                local given = false
+                for ci = 1, NbPlayers do
+                    local candidate = GetMasterLootCandidate(ci)
+                    if candidate == XckMLAdvancedLUA.aq_zg_items_guy then
+                        GiveMasterLoot(li, ci)
+                        given = true
+                        break
+                    end
+                end
+                if not given and XckMLAdvancedLUA.aq_zg_items_guy == UnitName("player") then
+                    LootSlot(li) -- если это сам мастер
+                end
+
+            -- ==== 2. мусор ====
+            elseif XckMLAdvancedMainSettingsAutoLootTrash:GetChecked()
+               and quality <= 1
+               and not XckMLAdvancedLUA.srData[name]
+               and not loot_prio[name]
+               and not LootedItemsTable[name] then
+
+                local given = false
+                for ci = 1, NbPlayers do
+                    local candidate = GetMasterLootCandidate(ci)
+                    if candidate == XckMLAdvancedLUA.poorguy then
+                        GiveMasterLoot(li, ci)
+                        given = true
+                        break
+                    end
+                end
+                if not given and XckMLAdvancedLUA.poorguy == UnitName("player") then
+                    LootSlot(li) -- если "пооргай" это сам лутер
+                end
+            end
+        else
+            -- отладка на случай пустого слота
+            print("AutoLootTrash: слот", li, "не содержит имени или качества", name, quality)
+        end
+    end
 end
 
 ------

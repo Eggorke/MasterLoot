@@ -837,7 +837,7 @@ function XckMLAdvancedLUA:AutoLootTrash()
 
             -- ==== 2. мусор ====
             elseif XckMLAdvancedMainSettingsAutoLootTrash:GetChecked()
-               and quality <= 1
+               and quality < GetLootThreshold()
                and not XckMLAdvancedLUA.srData[name]
                and not loot_prio[name]
                and not LootedItemsTable[name] then

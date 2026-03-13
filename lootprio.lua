@@ -271,7 +271,7 @@ loot_prio["Power of the Scourge"] = " - |cff9664c8No Prio|r"
 loot_prio["Resilience of the Scourge"] = " - |cff9664c8No Prio|r"
 loot_prio["Might of the Scourge"] = " - |cff9664c8No Prio|r"
 -- Kel'Thuzad:
-loot_prio["Stormrage's Talisman of Seething"] = " - |cffff4f00Core Prio|r * |cffc79c6eWarrior|r = |cff0070deEnch|r = |cfff58cbaAP Retri|r = |cfffff569Rogue|r"
+loot_prio["Stormrage's Talisman of Seething"] = " - |cff9664c8Phys DPS|r"
 loot_prio["Nerubian Slavemaker"] = " - |cffabd473Hunter|r = |cffc79c6eWarrior|r = |cfffff569Rogue|r"
 loot_prio["Gressil, Dawn of Ruin"] = " - |cffff4f00Core Prio|r * |cffc79c6eWarrior|r = |cfffff569Rogue|r"
 loot_prio["Doomfinger"] = " - |cffff4f00Core Prio|r * |cff69ccf0Mage|r > |cff9482c9Warlock|r"

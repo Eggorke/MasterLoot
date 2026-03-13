@@ -1284,32 +1284,31 @@ end
 -- Updating Item Selected
 function XckMLAdvancedLUA:UpdateSelectionFrame()
 	self:CreateBasicSelectionFrame()
+	local scrollChild = getglobal("SelectFrameScrollChild")
+	local scrollFrame = getglobal("SelectFrameScroll")
+	local MAX_VISIBLE_HEIGHT = 5 * 37 + 5  -- максимум 5 предметов видно
 	local frameHeight = 5
-	local county = MasterLootTable:GetItemCount()
-	-- print(county)
 	for itemIndex = 1, MasterLootTable:GetItemCount() do
 		local buttonName = "SelectionButton" .. itemIndex
-		local buttonFrame = getglobal(buttonName) or CreateFrame("Button", buttonName, selectionFrame, "SelectionButtonTemplate")
+		local buttonFrame = getglobal(buttonName) or CreateFrame("Button", buttonName, scrollChild, "SelectionButtonTemplate")
 		buttonFrame:Show()
 		buttonFrame:SetID(itemIndex)
 		local itemLink = MasterLootTable:GetItemLink(itemIndex)
-		-- print(itemLink)
 		local buttonItemLink = getglobal(buttonName .. "_ItemLink")
 		buttonItemLink:SetText(itemLink)
 
 		local _, _, itemIdStr = string.find(itemLink, "item:(%d+)")
 		local itemId = tonumber(itemIdStr)
-		-- print(itemId)
 		itemName, itemLink, itemQuality, _, _, _, _, _, itemTexture = GetItemInfo(itemId)
-		-- local itemTexture = MasterLootTable:GetItemTexture(itemIndex)
-		-- print(itemTexture)
 		local buttonItemTexture = getglobal(buttonName .. "_ItemTexture")
 		buttonItemTexture:SetTexture(itemTexture)
-		
-		buttonFrame:SetPoint("TOPLEFT", selectionFrame, "TOPLEFT", 0, -frameHeight)
+
+		buttonFrame:SetPoint("TOPLEFT", scrollChild, "TOPLEFT", 0, -frameHeight)
 		frameHeight = frameHeight + 37
 	end
-	selectionFrame:SetHeight(frameHeight)
+	scrollChild:SetHeight(frameHeight)
+	selectionFrame:SetHeight(math.min(frameHeight, MAX_VISIBLE_HEIGHT))
+	scrollFrame:SetVerticalScroll(0)
 end
 
 -- Get Amount of Items on Corpse
@@ -1343,8 +1342,28 @@ function XckMLAdvancedLUA:CreateBasicSelectionFrame()
 			selectionFrame:SetWidth(200)
 			selectionFrame:SetHeight(100)
 			selectionFrame:SetFrameStrata("FULLSCREEN_DIALOG")
+
+			-- ScrollFrame внутри selectionFrame
+			local sf = CreateFrame("ScrollFrame", "SelectFrameScroll", selectionFrame)
+			sf:SetPoint("TOPLEFT", selectionFrame, "TOPLEFT", 3, -3)
+			sf:SetPoint("BOTTOMRIGHT", selectionFrame, "BOTTOMRIGHT", -3, 3)
+			local sc = CreateFrame("Frame", "SelectFrameScrollChild", sf)
+			sc:SetWidth(194)
+			sc:SetHeight(100)
+			sf:SetScrollChild(sc)
+
+			-- скролл колёсиком мыши
+			selectionFrame:EnableMouseWheel(true)
+			selectionFrame:SetScript("OnMouseWheel", function()
+				local scrollFrame = getglobal("SelectFrameScroll")
+				local delta = arg1 > 0 and -37 or 37
+				local new = scrollFrame:GetVerticalScroll() + delta
+				new = math.max(0, math.min(new, scrollFrame:GetVerticalScrollRange()))
+				scrollFrame:SetVerticalScroll(new)
+			end)
+
 			selectionFrame:Show()
-			
+
 	end
 	local index = 1
 	local buttonName = "SelectionButton" .. index
